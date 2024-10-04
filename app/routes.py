@@ -19,11 +19,10 @@ def register_routes(app):
             df = pd.read_csv(file_path)
 
             for _, row in df.iterrows():
-                # Ensure release_date is properly handled
                 release_date = row['release_date']
-                if isinstance(release_date, str):  # Only convert if it's a string
+                if isinstance(release_date, str): 
                     release_date = datetime.strptime(release_date, '%Y-%m-%d')
-                elif pd.isna(release_date):  # Handle NaN case
+                elif pd.isna(release_date): 
                     release_date = None
 
                 movie = Movie(
@@ -32,7 +31,7 @@ def register_routes(app):
                     homepage=row['homepage'],
                     original_language=row['original_language'],
                     overview=row['overview'],
-                    release_date=release_date,  # Set the date (can be None)
+                    release_date=release_date,
                     revenue=row['revenue'],
                     runtime=row['runtime'],
                     status=row['status'],
@@ -40,7 +39,7 @@ def register_routes(app):
                     vote_count=row['vote_count'],
                     production_company_id=row['production_company_id'],
                     genre_id=row['genre_id'],
-                    languages=str(row['languages']).strip("[]'")  # Convert list-like string to simple string
+                    languages=str(row['languages']).strip("[]'")
                 )
                 db.session.add(movie)
             db.session.commit()
@@ -54,8 +53,8 @@ def register_routes(app):
         per_page = request.args.get('per_page', 10, type=int)
         release_year = request.args.get('release_year')
         language = request.args.get('language')
-        sort_by = request.args.get('sort_by', 'release_date')  # Default sorting by release_date
-        order = request.args.get('order', 'asc')  # Default order is ascending
+        sort_by = request.args.get('sort_by', 'release_date') 
+        order = request.args.get('order', 'asc') 
 
         query = Movie.query
         if release_year:
@@ -63,7 +62,6 @@ def register_routes(app):
         if language:
             query = query.filter(Movie.languages.like(f"%{language}%"))
 
-        # Sorting by release_date or vote_average (ratings)
         if sort_by == 'release_date':
             if order == 'desc':
                 query = query.order_by(Movie.release_date.desc())
@@ -93,7 +91,7 @@ def register_routes(app):
     @app.route('/movies', methods=['DELETE'])
     def delete_all_movies():
         try:
-            db.session.query(Movie).delete()  # Deletes all records in the Movie table
+            db.session.query(Movie).delete()  
             db.session.commit()
             return jsonify({"message": "All movies deleted successfully."}), 200
         except Exception as e:

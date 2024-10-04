@@ -15,4 +15,4 @@ class Movie(db.Model):
     vote_count = db.Column(db.Integer)
     production_company_id = db.Column(db.Integer)
     genre_id = db.Column(db.Integer)
-    languages = db.Column(db.String)  # Store languages as a string
+    languages = db.Column(db.String) 
