@@ -5,6 +5,26 @@ import pandas as pd
 import os
 from datetime import datetime
 
+DEFAULTS = {
+    "budget": 0.0,
+    "homepage": "",
+    "original_language": "Unknown",
+    "overview": "",
+    "release_date": None,
+    "revenue": 0.0,
+    "runtime": 0,
+    "status": "Unknown",
+    "title": "", 
+    "vote_average": 0.0,
+    "vote_count": 0,
+    "production_company_id": None,
+    "genre_id": None,
+    "languages": "",
+}
+
+def get_value(row, key, default):
+    return row[key] if key in row and pd.notna(row[key]) else default
+
 def register_routes(app):
     @app.route('/upload', methods=['POST'])
     def upload_csv():
@@ -26,20 +46,20 @@ def register_routes(app):
                     release_date = None
 
                 movie = Movie(
-                    title=row['title'],
-                    budget=row['budget'],
-                    homepage=row['homepage'],
-                    original_language=row['original_language'],
-                    overview=row['overview'],
-                    release_date=release_date,
-                    revenue=row['revenue'],
-                    runtime=row['runtime'],
-                    status=row['status'],
-                    vote_average=row['vote_average'],
-                    vote_count=row['vote_count'],
-                    production_company_id=row['production_company_id'],
-                    genre_id=row['genre_id'],
-                    languages=str(row['languages']).strip("[]'")
+                    title=get_value(row, 'title', DEFAULTS['title']),
+                    budget=get_value(row, 'budget', DEFAULTS['budget']),
+                    homepage=get_value(row, 'homepage', DEFAULTS['homepage']),
+                    original_language=get_value(row, 'original_language', DEFAULTS['original_language']),
+                    overview=get_value(row, 'overview', DEFAULTS['overview']),
+                    release_date=release_date if release_date is not None else DEFAULTS['release_date'],
+                    revenue=get_value(row, 'revenue', DEFAULTS['revenue']),
+                    runtime=get_value(row, 'runtime', DEFAULTS['runtime']),
+                    status=get_value(row, 'status', DEFAULTS['status']),
+                    vote_average=get_value(row, 'vote_average', DEFAULTS['vote_average']),
+                    vote_count=get_value(row, 'vote_count', DEFAULTS['vote_count']),
+                    production_company_id=get_value(row, 'production_company_id', DEFAULTS['production_company_id']),
+                    genre_id=get_value(row, 'genre_id', DEFAULTS['genre_id']),
+                    languages=str(get_value(row, 'languages', DEFAULTS['languages'])).strip("[]'")
                 )
                 db.session.add(movie)
             db.session.commit()
